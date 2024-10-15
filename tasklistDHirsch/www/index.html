@@ -4,12 +4,49 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
         <title>Tasklist</title>
+        <script>
+        $(function() {
+            $("#dialog").dialog({
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    "Afegir tasca": function() {
+                        var tasca = $("#tascaText").val();
+                        if (tasca) {
+                            $("#tasquesList").append("<li>" + tasca + "</li>");
+                            $(this).dialog("close");
+                            $("#tascaText").val(''); 
+                        }
+                    },
+                    "cancel·lar": function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            $("#afegirTascaBtn").click(function(){
+                $("#dialog").dialog("open");
+            });
+        });
+        </script>
     </head>
     <body>
         <h1>TaskList</h1>
-        <ul>
+
+        <ul id="tasquesList">
             <li>Tasca 1</li>
+            <li>Tasca 2</li>
         </ul>
+
+        <button id="afegirTascaBtn">Afegir Tasca</button>
+
+        <div id="dialog" title="Afegir nova tasca">
+            <label for="tascaText">Nom de la Tasca</label>
+            <input type="text" id="tascaText">
+        </div>
     </body>
 </html>
