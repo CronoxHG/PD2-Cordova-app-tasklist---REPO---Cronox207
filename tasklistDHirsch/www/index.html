@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="utf-8">
@@ -10,6 +9,7 @@
         <title>Tasklist</title>
         <script>
         $(function() {
+            
             $("#dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -17,20 +17,68 @@
                     "Afegir tasca": function() {
                         var tasca = $("#tascaText").val();
                         if (tasca) {
-                            $("#tasquesList").append("<li>" + tasca + "</li>");
+                            addTask(tasca);
                             $(this).dialog("close");
                             $("#tascaText").val(''); 
                         }
                     },
-                    "cancel·lar": function() {
+                    "Cancel·lar": function() {
                         $(this).dialog("close");
                     }
                 }
             });
 
+            
             $("#afegirTascaBtn").click(function(){
                 $("#dialog").dialog("open");
             });
+
+            
+            function addTask(tasca) {
+                var li = $('<li></li>');
+                var taskText = $('<span class="task-text"></span>').text(tasca);
+                var deleteBtn = $('<button>Elimina</button>').click(function(){
+                    $(this).parent().remove();
+                });
+                var editBtn = $('<button>Edita</button>').click(function(){
+                    editTask($(this).parent());
+                });
+
+                li.append(taskText);
+                li.append(deleteBtn);
+                li.append(editBtn);
+                $('#tasquesList').append(li);
+            }
+
+            function editTask(li) {
+                var taskText = li.find('.task-text');
+                var originalText = taskText.text();
+
+                li.html(`
+                  <input type="text" class="edit-input" value="${originalText}">
+                  <button class="ok-btn">OK</button>
+                `);
+
+                li.find('.ok-btn').click(function() {
+                    var newText = li.find('.edit-input').val();
+                    if (newText.trim()) {
+                        li.html('');
+                        var taskText = $('<span class="task-text"></span>').text(newText);
+                        var deleteBtn = $('<button>Elimina</button>').click(function(){
+                            $(this).parent().remove();
+                        });
+                        var editBtn = $('<button>Edita</button>').click(function(){
+                            editTask($(this).parent());
+                        });
+
+                        li.append(taskText);
+                        li.append(deleteBtn);
+                        li.append(editBtn);
+                    } else {
+                        alert('El text de la tasca no pot estar buit!');
+                    }
+                });
+            }
         });
         </script>
     </head>
@@ -38,8 +86,16 @@
         <h1>TaskList</h1>
 
         <ul id="tasquesList">
-            <li>Tasca 1</li>
-            <li>Tasca 2</li>
+            <li>
+                <span class="task-text">Tasca 1</span>
+                <button>Elimina</button>
+                <button>Edita</button>
+            </li>
+            <li>
+                <span class="task-text">Tasca 2</span>
+                <button>Elimina</button>
+                <button>Edita</button>                
+            </li>
         </ul>
 
         <button id="afegirTascaBtn">Afegir Tasca</button>
