@@ -9,7 +9,7 @@
         <title>Tasklist</title>
         <script>
         $(function() {
-            // Inicialitza el diàleg de jQuery UI per afegir una nova tasca
+            
             $("#dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -28,25 +28,23 @@
                 }
             });
 
-            // Obre el diàleg per afegir tasca
+            
             $("#afegirTascaBtn").click(function() {
                 $("#dialog").dialog("open");
             });
 
-            // Inicialitza l'accordion
             $("#tasquesList").accordion({
                 header: "> div > h3",
                 collapsible: true,
                 active: false
             });
 
-            // Funció per afegir una tasca
+         
             function addTask(tasca) {
-                // Crear la capçalera (h3) i el contingut (div) per a cada panell
+                
                 var header = $('<h3></h3>').text(tasca);
                 var content = $('<div></div>');
                 
-                // Crear els botons d'editar i eliminar dins del contingut
                 var deleteBtn = $('<button>Elimina</button>').click(function(){
                     content.parent().remove();
                     $("#tasquesList").accordion("refresh");
@@ -58,12 +56,12 @@
                 content.append(deleteBtn);
                 content.append(editBtn);
                 
-                // Inserir el panell dins de la llista de tasques
+                
                 $("#tasquesList").append($('<div></div>').append(header).append(content));
-                $("#tasquesList").accordion("refresh"); // Refresca l'accordion per incloure la nova tasca
+                $("#tasquesList").accordion("refresh"); 
             }
 
-            // Funció per editar una tasca
+            
             function editTask(header, content) {
                 var originalText = header.text();
                 content.html(`
@@ -74,9 +72,9 @@
                 content.find('.ok-btn').click(function() {
                     var newText = content.find('.edit-input').val();
                     if (newText.trim()) {
-                        header.text(newText);  // Actualitza la capçalera amb el nou text
+                        header.text(newText);  
                         
-                        // Restaurar els botons d'editar i eliminar
+                        
                         content.html('');  
                         var deleteBtn = $('<button>Elimina</button>').click(function(){
                             content.parent().remove();
