@@ -10,6 +10,12 @@
         <script>
         $(function() {
             
+            $("#tasquesList").accordion({
+                header: "> div > h3",
+                collapsible: true,
+                active: false
+            });
+            
             $("#dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -20,6 +26,7 @@
                             addTask(tasca);
                             $(this).dialog("close");
                             $("#tascaText").val(''); 
+                            saveTasks();
                         }
                     },
                     "Cancel·lar": function() {
@@ -28,25 +35,19 @@
                 }
             });
 
-            
             $("#afegirTascaBtn").click(function() {
                 $("#dialog").dialog("open");
             });
 
-            $("#tasquesList").accordion({
-                header: "> div > h3",
-                collapsible: true,
-                active: false
-            });
+            loadTasks();
 
-         
             function addTask(tasca) {
-                
                 var header = $('<h3></h3>').text(tasca);
                 var content = $('<div></div>');
                 
                 var deleteBtn = $('<button>Elimina</button>').click(function(){
-                    content.parent().remove();
+                    $(this).parent().parent().remove();
+                    saveTasks();
                     $("#tasquesList").accordion("refresh");
                 });
                 var editBtn = $('<button>Edita</button>').click(function(){
@@ -56,12 +57,10 @@
                 content.append(deleteBtn);
                 content.append(editBtn);
                 
-                
                 $("#tasquesList").append($('<div></div>').append(header).append(content));
                 $("#tasquesList").accordion("refresh"); 
             }
 
-            
             function editTask(header, content) {
                 var originalText = header.text();
                 content.html(`
@@ -74,10 +73,10 @@
                     if (newText.trim()) {
                         header.text(newText);  
                         
-                        
                         content.html('');  
                         var deleteBtn = $('<button>Elimina</button>').click(function(){
                             content.parent().remove();
+                            saveTasks();
                             $("#tasquesList").accordion("refresh");
                         });
                         var editBtn = $('<button>Edita</button>').click(function(){
@@ -86,10 +85,29 @@
 
                         content.append(deleteBtn);
                         content.append(editBtn);
+
+                        saveTasks(); 
                     } else {
                         alert('El text de la tasca no pot estar buit!');
                     }
                 });
+            }
+
+            function saveTasks() {
+                var tasks = [];
+                $("#tasquesList h3").each(function(){
+                    tasks.push($(this).text());
+                });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+
+            function loadTasks() {
+                var tasks = JSON.parse(localStorage.getItem('tasks'));
+                if (tasks) {
+                    tasks.forEach(function(tasca){
+                        addTask(tasca);
+                    });
+                }
             }
         });
         </script>
@@ -97,23 +115,7 @@
     <body>
         <h1>TaskList</h1>
 
-        <div id="tasquesList">
-            <div>
-                <h3>Tasca 1</h3>
-                <div>
-                    <button>Elimina</button>
-                    <button>Edita</button>
-                </div>
-            </div>
-            <div>
-                <h3>Tasca 2</h3>
-                <div>
-                    <button>Elimina</button>
-                    <button>Edita</button>
-                </div>
-            </div>
-        </div>
-
+        <div id="tasquesList"></div>
         <button id="afegirTascaBtn">Afegir Tasca</button>
 
         <div id="dialog" title="Afegir nova tasca">
