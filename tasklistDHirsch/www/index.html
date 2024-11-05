@@ -9,7 +9,7 @@
         <title>Tasklist</title>
         <script>
         $(function() {
-            
+            // Inicialitza el diàleg de jQuery UI per afegir una nova tasca
             $("#dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -28,52 +28,66 @@
                 }
             });
 
-            
-            $("#afegirTascaBtn").click(function(){
+            // Obre el diàleg per afegir tasca
+            $("#afegirTascaBtn").click(function() {
                 $("#dialog").dialog("open");
             });
 
-            
+            // Inicialitza l'accordion
+            $("#tasquesList").accordion({
+                header: "> div > h3",
+                collapsible: true,
+                active: false
+            });
+
+            // Funció per afegir una tasca
             function addTask(tasca) {
-                var li = $('<li></li>');
-                var taskText = $('<span class="task-text"></span>').text(tasca);
+                // Crear la capçalera (h3) i el contingut (div) per a cada panell
+                var header = $('<h3></h3>').text(tasca);
+                var content = $('<div></div>');
+                
+                // Crear els botons d'editar i eliminar dins del contingut
                 var deleteBtn = $('<button>Elimina</button>').click(function(){
-                    $(this).parent().remove();
+                    content.parent().remove();
+                    $("#tasquesList").accordion("refresh");
                 });
                 var editBtn = $('<button>Edita</button>').click(function(){
-                    editTask($(this).parent());
+                    editTask(header, content);
                 });
 
-                li.append(taskText);
-                li.append(deleteBtn);
-                li.append(editBtn);
-                $('#tasquesList').append(li);
+                content.append(deleteBtn);
+                content.append(editBtn);
+                
+                // Inserir el panell dins de la llista de tasques
+                $("#tasquesList").append($('<div></div>').append(header).append(content));
+                $("#tasquesList").accordion("refresh"); // Refresca l'accordion per incloure la nova tasca
             }
 
-            function editTask(li) {
-                var taskText = li.find('.task-text');
-                var originalText = taskText.text();
-
-                li.html(`
+            // Funció per editar una tasca
+            function editTask(header, content) {
+                var originalText = header.text();
+                content.html(`
                   <input type="text" class="edit-input" value="${originalText}">
                   <button class="ok-btn">OK</button>
                 `);
 
-                li.find('.ok-btn').click(function() {
-                    var newText = li.find('.edit-input').val();
+                content.find('.ok-btn').click(function() {
+                    var newText = content.find('.edit-input').val();
                     if (newText.trim()) {
-                        li.html('');
-                        var taskText = $('<span class="task-text"></span>').text(newText);
+                        header.text(newText);  // Actualitza la capçalera amb el nou text
+                        
+                        // Restaurar els botons d'editar i eliminar
+                        content.html('');  
                         var deleteBtn = $('<button>Elimina</button>').click(function(){
-                            $(this).parent().remove();
+                            content.parent().remove();
+                            $("#tasquesList").accordion("refresh");
                         });
                         var editBtn = $('<button>Edita</button>').click(function(){
-                            editTask($(this).parent());
+                            editTask(header, content);
                         });
 
-                        li.append(taskText);
-                        li.append(deleteBtn);
-                        li.append(editBtn);
+                        content.append(deleteBtn);
+                        content.append(editBtn);
                     } else {
                         alert('El text de la tasca no pot estar buit!');
                     }
@@ -85,18 +99,22 @@
     <body>
         <h1>TaskList</h1>
 
-        <ul id="tasquesList">
-            <li>
-                <span class="task-text">Tasca 1</span>
-                <button>Elimina</button>
-                <button>Edita</button>
-            </li>
-            <li>
-                <span class="task-text">Tasca 2</span>
-                <button>Elimina</button>
-                <button>Edita</button>                
-            </li>
-        </ul>
+        <div id="tasquesList">
+            <div>
+                <h3>Tasca 1</h3>
+                <div>
+                    <button>Elimina</button>
+                    <button>Edita</button>
+                </div>
+            </div>
+            <div>
+                <h3>Tasca 2</h3>
+                <div>
+                    <button>Elimina</button>
+                    <button>Edita</button>
+                </div>
+            </div>
+        </div>
 
         <button id="afegirTascaBtn">Afegir Tasca</button>
 
